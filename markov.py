@@ -43,7 +43,14 @@ def make_chains(text_string):
 def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
-    key = choice(chains.keys())
+    upper_case_keys = []
+    all_keys = chains.keys()
+
+    for word_set in all_keys:
+        if word_set[0][0].isupper():
+            upper_case_keys.append(word_set)
+
+    key = choice(upper_case_keys)
     words = [key[0], key[1]]
     while key in chains:
         # Keep looping until we have a key that isn't in the chains
@@ -56,14 +63,58 @@ def make_text(chains):
         words.append(word)
         key = (key[1], word)
 
-    return " ".join(words)
+    joined_text = " ".join(words)
+
+    
+    # slice text string if it's over 140 characters
+
+    if len(joined_text) > 140:
+        joined_text = joined_text[:140]
 
 
-def tweet(chains):
+        # check the last punctuation, and if it is '?', '.', or '--', slice up to
+        # these punctuations. Otherwise, slice up to the last space
+
+        if '.' in joined_text and '?' in joined_text: 
+            last_question_mark_index = joined_text.rindex('?') 
+            last_period_index = joined_text.rindex('.')  
+            max_index = max(last_period_index, last_question_mark_index)
+            joined_text = joined_text[:max_index + 1]
+        elif '.' in joined_text:    
+            last_period_index = joined_text.rindex('.') 
+            joined_text = joined_text[:last_period_index + 1] 
+        elif '?' in joined_text: 
+            last_question_mark_index = joined_text.rindex('?')       
+            joined_text = joined_text[:last_question_mark_index + 1]
+        elif '--' in joined_text:
+            last_double_dash_index = joined_text.rindex('--')
+            joined_text = joined_text[:last_double_dash_index - 1] + '.'
+        else:
+            last_space_index = joined_text.rindex(" ")
+            joined_text = joined_text[:last_space_index]
+
+
+    return joined_text
+
+def tweet(text):
     # Use Python os.environ to get at environmental variables
     # Note: you must run `source secrets.sh` before running this file
     # to make sure these environmental variables are set.
-    pass
+    
+    api = twitter.Api (
+        consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
+        consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
+        access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
+        access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
+
+
+    print api.VerifyCredentials()
+
+    status = api.PostUpdate(text)
+
+    print status.text
+
+
 
 # Get the filenames from the user through a command line prompt, ex:
 # python markov.py green-eggs.txt shakespeare.txt
@@ -77,3 +128,22 @@ chains = make_chains(text)
 
 # Your task is to write a new function tweet, that will take chains as input
 # tweet(chains)
+
+text = make_text(chains)
+
+print text
+
+tweet(text)
+
+tweet_again = raw_input('Enter to tweet again [q to quit] > ')
+
+while True:
+    if tweet_again == '\r':
+        chains = make_chains(text)
+        print text
+        tweet(text)
+    elif tweet_again[0].lower() == 'q':
+        print "Thank you for using the Dori-Shijie twitter bot."
+    else:
+        print "Invalid response."
+        continue
