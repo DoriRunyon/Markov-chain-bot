@@ -19,7 +19,8 @@ def open_and_read_file(filenames):
 
 
 def make_chains(text_string):
-    """Takes input text as string; returns dictionary of markov chains."""
+    """Takes input text as strifilenames:
+        text_file = open(filenng; returns dictionary of markov chains."""
 
     chains = {}
 
@@ -116,34 +117,54 @@ def tweet(text):
 
 
 
-# Get the filenames from the user through a command line prompt, ex:
-# python markov.py green-eggs.txt shakespeare.txt
-filenames = sys.argv[1:]
+# # Get the filenames from the user through a command line prompt, ex:
+# # python markov.py green-eggs.txt shakespeare.txt
+# filenames = sys.argv[1]
 
-# Open the files and turn them into one long string
-text = open_and_read_file(filenames)
+# # Open the files and turn them into one long string
+# text = open_and_read_file(filenames)
 
-# Get a Markov chain
-chains = make_chains(text)
+# # Get a Markov chain
+# chains = make_chains(text)
 
-# Your task is to write a new function tweet, that will take chains as input
-# tweet(chains)
+# # Your task is to write a new function tweet, that will take chains as input
+# # tweet(chains)
 
-text = make_text(chains)
+# text_body = make_text(chains)
 
-print text
+# print text_body
 
-tweet(text)
+# tweet(text_body)
 
-tweet_again = raw_input('Enter to tweet again [q to quit] > ')
+
+# print tweet_again
+
+
+def auto_tweet(filename):
+    text = open_and_read_file(filename)
+    chains = make_chains(text)
+    text_body = make_text(chains)
+    tweet(text_body)
+
+file_list = sys.argv[1:]
+
+print file_list
+
+auto_tweet(file_list)
+
+tweet_again = raw_input('Enter to tweet again [q to quit] [hit <Return> to continue] > ')
 
 while True:
-    if tweet_again == '\r':
-        chains = make_chains(text)
-        print text
-        tweet(text)
-    elif tweet_again[0].lower() == 'q':
+    if tweet_again == '': 
+        print "Success"
+        auto_tweet(file_list)
+        tweet_again = raw_input('Enter to tweet again [q to quit] > Y for yes')
+
+    elif tweet_again == 'q':
         print "Thank you for using the Dori-Shijie twitter bot."
+        break
     else:
         print "Invalid response."
+        tweet_again = raw_input('Enter to tweet again [q to quit] > Y/N')
         continue
+
