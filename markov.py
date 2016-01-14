@@ -158,13 +158,13 @@ while True:
     if tweet_again == '': 
         print "Success"
         auto_tweet(file_list)
-        tweet_again = raw_input('Enter to tweet again [q to quit] > Y for yes')
+        tweet_again = raw_input('Enter to tweet again [q to quit] [hit <Return> to continue] > ')
 
     elif tweet_again == 'q':
         print "Thank you for using the Dori-Shijie twitter bot."
         break
     else:
         print "Invalid response."
-        tweet_again = raw_input('Enter to tweet again [q to quit] > Y/N')
+        tweet_again = raw_input('Enter to tweet again [q to quit] [hit <Return> to continue] > ')
         continue
 
